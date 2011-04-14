@@ -1,0 +1,19 @@
+{
+  "author": "Nathan Rajlich <nathan@tootallnate.net> (http://tootallnate.net)",
+  "name": "iOS",
+  "description": "Native node bindings to iOS functionality (vibrate, acceleromoter, geoservices, etc.)",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/TooTallNate/node-iOS.git"
+  },
+  "main": "./build/default/binding.node",
+  "directories": {
+    "lib": "./"
+  },
+  "engines": {
+    "node": ">= 0.4.0"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
