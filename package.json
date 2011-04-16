@@ -7,13 +7,15 @@
     "type": "git",
     "url": "git://github.com/TooTallNate/node-iOS.git"
   },
-  "main": "./build/default/binding.node",
+  "main": "./index.js",
   "directories": {
     "lib": "./"
   },
   "engines": {
     "node": ">= 0.4.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "autoreleasepool: ">= 0.0.1"
+  },
   "devDependencies": {}
 }
