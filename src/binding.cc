@@ -6,6 +6,7 @@
 #include <v8.h>
 #include <node.h>
 #import <AudioToolbox/AudioToolbox.h>
+#import <UIKit/UIKit.h>
 
 using namespace node;
 using namespace v8;
@@ -13,49 +14,56 @@ using namespace v8;
 class Binding {
   public:
 
-  //static Persistent<FunctionTemplate> s_ct;
-  //static Persistent<FunctionTemplate> ft_vibrate;
+  static v8::Handle<Object> exports;
 
   static void Init(v8::Handle<Object> target) {
     HandleScope scope;
 
-    //Local<FunctionTemplate> t = FunctionTemplate::New(New);
+    // Save a reference for later...
+    exports = target;
 
-    //s_ct = Persistent<FunctionTemplate>::New(t);
-    //s_ct->InstanceTemplate()->SetInternalFieldCount(1);
-    //s_ct->SetClassName(String::NewSymbol("iTunesApplication"));
-
-    //NODE_SET_PROTOTYPE_METHOD(s_ct, "getVolume", GetVolume);
-
-    //target->Set(String::NewSymbol("iTunesApplication"),
-    //            s_ct->GetFunction());
     NODE_SET_METHOD(target, "vibrate", Vibrate);
+    NODE_SET_METHOD(target, "device", Device);
   }
 
-  /*static v8::Handle<Value> New(const Arguments& args) {
-    HandleScope scope;
-    node_iTunesApplication* hw = new node_iTunesApplication();
-    hw->Wrap(args.This());
-    return args.This();
-  }*/
-
   static v8::Handle<Value> Vibrate(const Arguments& args) {
-    //HandleScope scope;
-    //node_iTunesApplication* hw = ObjectWrap::Unwrap<node_iTunesApplication>(args.This());
-    //Local<Integer> result = Integer::New(getVolume((iTunesApplication*)hw->iTunesRef));
-    //iTunesApplication* iTunes = hw->iTunesRef;
-    //Local<Integer> result = Integer::New([iTunes soundVolume]);
-    AudioServicesPlaySystemSound (kSystemSoundID_Vibrate);
-    return Undefined();//scope.Close(result);
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+    return Undefined();
+  }
+
+  static v8::Handle<Value> Device(const Arguments& args) {
+    HandleScope scope;
+    Local<Object> result = Object::New();
+
+    UIDevice *aDevice = [UIDevice currentDevice];
+    /*if ([aDevice respondsToSelector:@selector(isMultitaskingSupported)]) {
+      result->Set(String::NewSymbol("multitaskingSupported"), v8::Boolean::New([aDevice isMultitaskingSupported]));
+    }
+    if ([aDevice respondsToSelector:@selector(proximityState)]) {
+      [aDevice proximityMonitoringEnabled] = YES;
+      result->Set(String::NewSymbol("proximityState"), v8::Boolean::New([aDevice proximityState]));
+    }
+    if ([aDevice respondsToSelector:@selector(batteryLevel)]) {
+      id bat = [aDevice batteryLevel];
+      float level = (float)bat;
+      result->Set(String::NewSymbol("batteryLevel"), Number::New(level));
+    }*/
+    result->Set(String::NewSymbol("model"), String::NewSymbol([[aDevice model] UTF8String]));
+    result->Set(String::NewSymbol("localizedModel"), String::NewSymbol([[aDevice localizedModel] UTF8String]));
+    result->Set(String::NewSymbol("name"), String::NewSymbol([[aDevice name] UTF8String]));
+    result->Set(String::NewSymbol("systemName"), String::NewSymbol([[aDevice systemName] UTF8String]));
+    result->Set(String::NewSymbol("systemVersion"), String::NewSymbol([[aDevice systemVersion] UTF8String]));
+    result->Set(String::NewSymbol("uniqueIdentifier"), String::NewSymbol([[aDevice uniqueIdentifier] UTF8String]));
+
+    return scope.Close(result);
   }
 
 };
 
-//Persistent<FunctionTemplate> node_iTunesApplication::s_ct;
+v8::Handle<Object> Binding::exports;
 
 extern "C" {
-  static void init (v8::Handle<Object> target)
-  {
+  static void init (v8::Handle<Object> target) {
     Binding::Init(target);
   }
 
