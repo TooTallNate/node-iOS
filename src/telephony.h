@@ -1,5 +1,5 @@
-#include <node.h>
-#include <v8.h>
+#import <node.h>
+#import <v8.h>
 #import <Foundation/Foundation.h>
 #import <CoreFoundation/CoreFoundation.h>
 #import <CoreTelephony/CoreTelephony.h>

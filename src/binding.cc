@@ -1,10 +1,5 @@
-/* This code is PUBLIC DOMAIN, and is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND. See the accompanying 
- * LICENSE file.
- */
-
-#include <v8.h>
-#include <node.h>
+#import <v8.h>
+#import <node.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <UIKit/UIKit.h>
 #import "telephony.h"
