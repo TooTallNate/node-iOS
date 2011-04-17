@@ -7,6 +7,7 @@
 #include <node.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <UIKit/UIKit.h>
+#import "telephony.h"
 
 using namespace node;
 using namespace v8;
@@ -24,6 +25,7 @@ class Binding {
 
     NODE_SET_METHOD(target, "vibrate", Vibrate);
     NODE_SET_METHOD(target, "device", Device);
+    NODE_SET_METHOD(target, "sendSMS", Telephony::SendSMS);
   }
 
   static v8::Handle<Value> Vibrate(const Arguments& args) {
@@ -34,6 +36,7 @@ class Binding {
   static v8::Handle<Value> Device(const Arguments& args) {
     HandleScope scope;
     Local<Object> result = Object::New();
+
 
     UIDevice *aDevice = [UIDevice currentDevice];
     /*if ([aDevice respondsToSelector:@selector(isMultitaskingSupported)]) {
@@ -48,6 +51,8 @@ class Binding {
       float level = (float)bat;
       result->Set(String::NewSymbol("batteryLevel"), Number::New(level));
     }*/
+
+    //NSLog(@"batteryLevel: %f", [aDevice batteryLevel]);
     result->Set(String::NewSymbol("model"), String::NewSymbol([[aDevice model] UTF8String]));
     result->Set(String::NewSymbol("localizedModel"), String::NewSymbol([[aDevice localizedModel] UTF8String]));
     result->Set(String::NewSymbol("name"), String::NewSymbol([[aDevice name] UTF8String]));
