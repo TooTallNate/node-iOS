@@ -61,6 +61,16 @@ Sends an SMS with the specified `message` String to the specified `number`. Exam
     iOS.sendSMS('(555) 555-5555', 'and one more?!');
     iOS.sendSMS(5555555555, 'you may just use a Number as well');
 
+### lockScreen() -> Undefined
+
+Locks the screen of the iDevice. Same effect as pressing the top "Lock" button.
+
+### quitTopApplication() -> Undefined
+
+Quits the currently visible application, going straight to the Home screen. On a
+device with multitasking support, the app will still be running in the process list.
+Same effect as pressing the "Home" button.
+
 
 [Node]: http://nodejs.org
 [UIDevice]: http://developer.apple.com/library/ios/#documentation/uikit/reference/UIDevice_Class/Reference/UIDevice.html
