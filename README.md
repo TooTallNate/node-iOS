@@ -15,20 +15,20 @@ mojority of devices.
 Silly Examples
 --------------
 
-    var iOS = require('iOS');
+``` javascript
+var iOS = require('iOS');
 
-    iOS.vibrate();
-    // Quick vibrate, like when you receive text message
+iOS.vibrate();
+// Quick vibrate, like when you receive text message
 
-    iOS.device();
-    // { model: 'iPhone',
-    //   localizedModel: 'iPhone',
-    //   name: 'Nathan Rajlich\'s iPhone',
-    //   systemName: 'iPhone OS',
-    //   systemVersion: '4.3.1',
-    //   uniqueIdentifier: 'f1dfb3fa9f73fc9ffef4fcf3f61fff6f05ff1afb' }
-
-    
+iOS.device();
+// { model: 'iPhone',
+//   localizedModel: 'iPhone',
+//   name: 'Nathan Rajlich\'s iPhone',
+//   systemName: 'iPhone OS',
+//   systemVersion: '4.3.1',
+//   uniqueIdentifier: 'f1dfb3fa9f73fc9ffef4fcf3f61fff6f05ff1afb' }
+```
 
 See the `API` section below to learn it all!
 
@@ -45,21 +45,25 @@ On devices that don't vibrate, this function does nothing (no error is thrown).
 
 Returns an Object containing properties from the current [UIDevice][]. An example:
 
-    { model: 'iPhone',
-      localizedModel: 'iPhone',
-      name: 'Nathan Rajlich\'s iPhone',
-      systemName: 'iPhone OS',
-      systemVersion: '4.3.1',
-      uniqueIdentifier: 'f1dfb3fa9f73fc9ffef4fcf3f61fff6f05ff1afb' }
+``` javascript
+{ model: 'iPhone',
+  localizedModel: 'iPhone',
+  name: 'Nathan Rajlich\'s iPhone',
+  systemName: 'iPhone OS',
+  systemVersion: '4.3.1',
+  uniqueIdentifier: 'f1dfb3fa9f73fc9ffef4fcf3f61fff6f05ff1afb' }
+```
 
 ### sendSMS(number, message) -> Boolean
 
 Sends an SMS with the specified `message` String to the specified `number`. Examples:
 
-    iOS.sendSMS('5555555555', 'this is a text message!');
-    iOS.sendSMS('555-555-5555', 'another text message!');
-    iOS.sendSMS('(555) 555-5555', 'and one more?!');
-    iOS.sendSMS(5555555555, 'you may just use a Number as well');
+``` javascript
+iOS.sendSMS('5555555555', 'this is a text message!');
+iOS.sendSMS('555-555-5555', 'another text message!');
+iOS.sendSMS('(555) 555-5555', 'and one more?!');
+iOS.sendSMS(5555555555, 'you may just use a Number as well');
+```
 
 ### lockScreen() -> Undefined
 
