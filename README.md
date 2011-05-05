@@ -24,7 +24,7 @@ iOS.vibrate();
 iOS.device();
 // { model: 'iPhone',
 //   localizedModel: 'iPhone',
-//   name: 'Nathan Rajlich\'s iPhone',
+//   name: 'Nathan Rajlich’s iPhone',
 //   systemName: 'iPhone OS',
 //   systemVersion: '4.3.1',
 //   uniqueIdentifier: 'f1dfb3fa9f73fc9ffef4fcf3f61fff6f05ff1afb' }
