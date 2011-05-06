@@ -13,6 +13,7 @@ struct notification_request {
   CFUserNotificationRef notif;
   SInt32 error;
   v8::Persistent<v8::Function> cb;
+  bool hasCb;
 };
 
 class Notifications {

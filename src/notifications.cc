@@ -26,7 +26,6 @@ v8::Handle<Value> Notifications::createNotification(const Arguments& args) {
   }
 
   Local<Object> options = args[0]->ToObject();
-  Local<Function> cb = Local<Function>::Cast(args[1]);
 
   // This is the struct that gets passed around EIO
   notification_request* nr = (notification_request*) malloc(sizeof(struct notification_request));
@@ -72,9 +71,14 @@ v8::Handle<Value> Notifications::createNotification(const Arguments& args) {
   }
 
   CFUserNotificationRef notif = CFUserNotificationCreate(NULL, timeout, flags, &nr->error, dict);
-
   nr->notif = notif;
-  nr->cb = Persistent<Function>::New(cb);
+
+  nr->hasCb = false;
+  if (args.Length() >= 2) {
+    Local<Function> cb = Local<Function>::Cast(args[1]);
+    nr->cb = Persistent<Function>::New(cb);
+    nr->hasCb = true;
+  }
 
   eio_custom(CreateNotification_WaitForResponse, EIO_PRI_DEFAULT, CreateNotification_AfterResponse, nr);
   ev_ref(EV_DEFAULT_UC);
@@ -99,24 +103,26 @@ int CreateNotification_AfterResponse (eio_req * req) {
 
   struct notification_request * nr = (struct notification_request *)req->data;
 
-  // Prepare the callback arguments
-  Local<Value> argv[2];
-  argv[0] = Local<Value>::New(Null());
+  if (nr->hasCb) {
+    // Prepare the callback arguments
+    Local<Value> argv[2];
+    argv[0] = Local<Value>::New(Null());
 
-  Local<Object> results = Object::New();
-  results->Set(String::NewSymbol("result"), Integer::New( req->result ));
-  results->Set(String::NewSymbol("error"), Integer::New( nr->error ));
-  results->Set(String::NewSymbol("options"), Integer::New( nr->options ));
-  argv[1] = results;
+    Local<Object> results = Object::New();
+    results->Set(String::NewSymbol("result"), Integer::New( req->result ));
+    results->Set(String::NewSymbol("error"), Integer::New( nr->error ));
+    results->Set(String::NewSymbol("options"), Integer::New( nr->options ));
+    argv[1] = results;
 
-  // Invoke 'le callback
-  TryCatch try_catch;
-  nr->cb->Call(Context::GetCurrent()->Global(), 2, argv);
-  if (try_catch.HasCaught()) {
-    FatalException(try_catch);
+    // Invoke 'le callback
+    TryCatch try_catch;
+    nr->cb->Call(Context::GetCurrent()->Global(), 2, argv);
+    if (try_catch.HasCaught()) {
+      FatalException(try_catch);
+    }
+    nr->cb.Dispose();
   }
 
-  nr->cb.Dispose();
   free(nr);
   return 0;
 }
