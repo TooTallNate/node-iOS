@@ -12,4 +12,4 @@ def build(bld):
   obj.ldflags = ["-F/System/Library/PrivateFrameworks"]
   obj.framework = ['Foundation', 'AudioToolbox', 'UIKit', 'CoreFoundation', 'CoreTelephony', 'GraphicsServices']
   obj.target = "binding"
-  obj.source = ["src/binding.cc", "src/graphicServices.cc", "src/telephony.cc"]
+  obj.source = ["src/binding.cc", "src/graphicServices.cc", "src/notifications.cc", "src/telephony.cc"]

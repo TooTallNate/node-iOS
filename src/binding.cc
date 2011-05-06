@@ -3,6 +3,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <UIKit/UIKit.h>
 #import "graphicServices.h"
+#import "notifications.h"
 #import "telephony.h"
 
 using namespace node;
@@ -67,6 +68,7 @@ extern "C" {
   static void init (v8::Handle<Object> target) {
     Binding::Init(target);
     GraphicServices::Init(target);
+    Notifications::Init(target);
   }
 
   NODE_MODULE(binding, init);
