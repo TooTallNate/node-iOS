@@ -36,6 +36,33 @@ See the `API` section below to learn it all!
 API
 ---
 
+### createNotification(options[, callback]) -> undefined
+
+Creates and displays a pop-up "notification" onto the iDevice. The optional `callback`
+function will be called after the notification has been dismissed (through user interaction
+or otherwise).
+
+``` javascript
+iOS.createNotification({
+  header: "Title",
+  message: "Enter your name..."
+}, function(err, response) {
+  if (err) throw err;
+
+  console.log(response);  
+});
+```
+
+The `options` Object accepts the following parameters:
+
+ * `header` - A String that will be used as the header of the notification. Defaults to `null`.
+ * `message` - A String that will be used as the message body of the notification. Defaults to `null`.
+ * `defaultButton` - The text of the default (primary) button. Defaults to `'OK'`. To disable the
+                     default button (notification without any buttons) pass `null` here.
+ * `alternateButton` - The text of the secondary (alternate) button. Defaults to `null` (no second button).
+ * `otherButton` - The text of the third (other) button. Defaults to `null` (no third button).
+ * `timeout` - The timeout in seconds of the notification. Defaults to `0` for no timeout.
+
 ### vibrate() -> undefined
 
 Vibrates the iDevice shortly. This is the same as when a text message or email arrives, etc.
