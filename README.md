@@ -20,7 +20,13 @@ API
 
 Creates and displays a pop-up "notification" onto the iDevice. The optional `callback`
 function will be called after the notification has been dismissed (through user interaction
-or otherwise).
+or otherwise cancelled).
+
+The most recent call to this function will be the active notification. That is, if
+there's already an active notification, and this function is called, then the newly
+created notification will take precedence over any existing notifications. So if you
+want to display a series of notifications, it's better invoke the next one in the
+previous notification's callback.
 
 ``` javascript
 iOS.createNotification({
@@ -38,7 +44,7 @@ The `options` Object accepts the following parameters:
  * `header` - A String that will be used as the header of the notification. Defaults to `null`.
  * `message` - A String that will be used as the message body of the notification. Defaults to `null`.
  * `defaultButton` - The text of the default (primary) button. Defaults to `'OK'`. To disable the
-                     default button (notification without any buttons) pass `null` here.
+                     default button (notification without any buttons), explicity pass `null` here.
  * `alternateButton` - The text of the secondary (alternate) button. Defaults to `null` (no second button).
  * `otherButton` - The text of the third (other) button. Defaults to `null` (no third button).
  * `timeout` - The timeout in seconds of the notification. Defaults to `0` for no timeout.

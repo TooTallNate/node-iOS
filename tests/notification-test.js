@@ -4,11 +4,14 @@ iOS.createNotification({
   message: 'This message will have NO buttons!',
   defaultButton: null,
   timeout: 3
-}, console.log);
+}, function(err, res) {
+  console.log(arguments);
 
-iOS.createNotification({
-  header: 'test header',
-  message: 'This is a message!!',
-  defaultButton: 'first',
-  alternateButton: 'second'
-}, console.log);
+  iOS.createNotification({
+    header: 'test header',
+    message: 'This is a message!!',
+    defaultButton: 'first',
+    alternateButton: 'second'
+  }, console.log);
+});
+
