@@ -5,6 +5,7 @@
 #import "graphicServices.h"
 #import "notifications.h"
 #import "telephony.h"
+#import "compatibility.h" // ...meh
 
 using namespace node;
 using namespace v8;
@@ -12,13 +13,12 @@ using namespace v8;
 class Binding {
   public:
 
-  static v8::Handle<Object> exports;
-
   static void Init(v8::Handle<Object> target) {
     HandleScope scope;
 
-    // Save a reference for later...
-    exports = target;
+    UIDevice *aDevice = [UIDevice currentDevice];
+    [aDevice beginGeneratingDeviceOrientationNotifications];
+    [aDevice setBatteryMonitoringEnabled:YES];
 
     NODE_SET_METHOD(target, "vibrate", Vibrate);
     NODE_SET_METHOD(target, "device", Device);
@@ -34,24 +34,13 @@ class Binding {
     HandleScope scope;
     Local<Object> result = Object::New();
 
-
     UIDevice *aDevice = [UIDevice currentDevice];
-    /*if ([aDevice respondsToSelector:@selector(isMultitaskingSupported)]) {
-      result->Set(String::NewSymbol("multitaskingSupported"), v8::Boolean::New([aDevice isMultitaskingSupported]));
-    }
-    if ([aDevice respondsToSelector:@selector(proximityState)]) {
-      [aDevice proximityMonitoringEnabled] = YES;
-      result->Set(String::NewSymbol("proximityState"), v8::Boolean::New([aDevice proximityState]));
-    }
-    if ([aDevice respondsToSelector:@selector(batteryLevel)]) {
-      id bat = [aDevice batteryLevel];
-      float level = (float)bat;
-      result->Set(String::NewSymbol("batteryLevel"), Number::New(level));
-    }*/
 
-    //NSLog(@"batteryLevel: %f", [aDevice batteryLevel]);
+    result->Set(String::NewSymbol("batteryLevel"), Number::New([aDevice batteryLevel]));
+    result->Set(String::NewSymbol("batteryState"), Integer::New([aDevice batteryState]));
     result->Set(String::NewSymbol("model"), String::NewSymbol([[aDevice model] UTF8String]));
     result->Set(String::NewSymbol("localizedModel"), String::NewSymbol([[aDevice localizedModel] UTF8String]));
+    result->Set(String::NewSymbol("orientation"), Integer::New([aDevice orientation]));
     result->Set(String::NewSymbol("name"), String::NewSymbol([[aDevice name] UTF8String]));
     result->Set(String::NewSymbol("systemName"), String::NewSymbol([[aDevice systemName] UTF8String]));
     result->Set(String::NewSymbol("systemVersion"), String::NewSymbol([[aDevice systemVersion] UTF8String]));
@@ -61,8 +50,6 @@ class Binding {
   }
 
 };
-
-v8::Handle<Object> Binding::exports;
 
 extern "C" {
   static void init (v8::Handle<Object> target) {
