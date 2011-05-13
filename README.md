@@ -12,6 +12,11 @@ Considering the fact that most jailbroken devices won't have a GCC toolchain set
 device, this repo includes a pre-built version of the module that hopefully will work on the
 majority of devices.
 
+I'm always looking for ideas for additional APIs to add. So if you can think of any
+functionality that you want exposed to JavaScript that's missing from the API below,
+then please don't hesitate to open an [Issue](https://github.com/TooTallNate/node-iOS/issues)
+requesting it!
+
 
 API
 ---
