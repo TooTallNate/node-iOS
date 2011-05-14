@@ -51,12 +51,8 @@ class Binding {
 
 };
 
-extern "C" {
-  static void init (v8::Handle<Object> target) {
-    Binding::Init(target);
-    GraphicServices::Init(target);
-    Notifications::Init(target);
-  }
-
-  NODE_MODULE(binding, init);
+extern "C" void init (v8::Handle<Object> target) {
+  Binding::Init(target);
+  GraphicServices::Init(target);
+  Notifications::Init(target);
 }
