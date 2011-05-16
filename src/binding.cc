@@ -2,6 +2,7 @@
 #import <node.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <UIKit/UIKit.h>
+#import "addressBook.h"
 #import "graphicServices.h"
 #import "notifications.h"
 #import "telephony.h"
@@ -53,6 +54,7 @@ class Binding {
 
 extern "C" void init (v8::Handle<Object> target) {
   Binding::Init(target);
+  AddressBook::Init(target);
   GraphicServices::Init(target);
   Notifications::Init(target);
 }

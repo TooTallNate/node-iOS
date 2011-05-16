@@ -54,10 +54,28 @@ The `options` Object accepts the following parameters:
  * `otherButton` - The text of the third (other) button. Defaults to `null` (no third button).
  * `timeout` - The timeout in seconds of the notification. Defaults to `0` for no timeout.
 
+
+### new AddressBook() -> AddressBook
+
+You can create an `AddressBook` instance for when you want information regarding the iDevice's
+central Address Book database. It's also possible to modify the Address Book by adding, editing
+or removing contacts or groups.
+
+``` javascript
+var addressBook = new iOS.AddressBook();
+```
+
+#### addressBook.getAllContacts(callback)
+
+Asynchronously retrieves an Array of _all_ "contacts" that are currently in the
+Address Book database.
+
+
 ### vibrate() -> undefined
 
 Vibrates the iDevice shortly. This is the same as when a text message or email arrives, etc.
 On devices that don't vibrate, this function does nothing (no error is thrown).
+
 
 ### device() -> Object
 
@@ -72,9 +90,10 @@ Returns an Object containing properties from the current [UIDevice][]. An exampl
   uniqueIdentifier: 'f1dfb3fa9f73fc9ffef4fcf3f61fff6f05ff1afb' }
 ```
 
+
 ### sendSMS(number, message) -> Boolean
 
-Sends an SMS with the specified `message` String to the specified `number`. Examples:
+Sends an [SMS][] with the specified `message` String to the specified `number`. Examples:
 
 ``` javascript
 iOS.sendSMS('5555555555', 'this is a text message!');
@@ -83,11 +102,13 @@ iOS.sendSMS('(555) 555-5555', 'and one more?!');
 iOS.sendSMS(5555555555, 'you may just use a Number as well');
 ```
 
-### lockScreen() -> Undefined
+
+### lockScreen() -> undefined
 
 Locks the screen of the iDevice. Same effect as pressing the top "Lock" button.
 
-### quitTopApplication() -> Undefined
+
+### quitTopApplication() -> undefined
 
 Quits the currently visible application, going straight to the Home screen. On a
 device with multitasking support, the app will still be running in the process list.
@@ -95,4 +116,5 @@ Same effect as pressing the "Home" button.
 
 
 [Node]: http://nodejs.org
+[SMS]: http://en.wikipedia.org/wiki/SMS
 [UIDevice]: http://developer.apple.com/library/ios/#documentation/uikit/reference/UIDevice_Class/Reference/UIDevice.html
