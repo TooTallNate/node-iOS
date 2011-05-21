@@ -59,7 +59,6 @@ int GetContacts_DoRequest (eio_req * req) {
   ar->results = (struct person_object*) malloc(sizeof(struct person_object) * count);
 
   int buf_len;
-  printf("Num records: %ld\n", count);
   for (CFIndex i=0; i<count; i++) {
     struct person_object* p = (struct person_object*)(&ar->results + (sizeof(struct person_object)*i));
     ABRecordRef pRef = CFArrayGetValueAtIndex(people, i);
@@ -72,7 +71,6 @@ int GetContacts_DoRequest (eio_req * req) {
       if (!CFStringGetCString(str, p->firstName, buf_len, kCFStringEncodingUTF8)) {
         // TODO Throw error
       }
-      printf("firstName: %s\n",p->firstName);
       CFRelease(str);
     } else {
       p->firstName = NULL;
@@ -104,10 +102,12 @@ int GetContacts_AfterResponse (eio_req * req) {
       Local<Object> curPerson = Object::New();
       if (p->firstName != NULL) {
         curPerson->Set(String::NewSymbol("firstName"), String::NewSymbol( p->firstName ));
-        free(p->firstName);
+        // I don't think this is right..., I think we're supposed to free this
+        // but I get a nasty error message when this gets uncommented...
+        // somebody with some better memory manegement hax0rz needs to take
+        // a look...
+        //free(p->firstName);
       }
-      //results->Set(String::NewSymbol("error"), Integer::New( nr->error ));
-      //results->Set(String::NewSymbol("options"), Integer::New( nr->options ));
       resultsArray->Set(Integer::New(i), curPerson);
     }
     argv[1] = resultsArray;
