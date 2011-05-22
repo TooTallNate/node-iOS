@@ -1,5 +1,9 @@
+// http://developer.apple.com/library/ios/documentation/AddressBook/Reference/ABAddressBookRef_iPhoneOS/Reference/reference.html
+// http://developer.apple.com/library/ios/documentation/AddressBook/Reference/ABRecordRef_iPhoneOS/Reference/reference.html
+// http://developer.apple.com/library/ios/documentation/AddressBook/Reference/ABPersonRef_iPhoneOS/Reference/reference.html
+// http://developer.apple.com/library/ios/documentation/AddressBook/Reference/ABGroupRef_iPhoneOS/Reference/reference.html
+
 #import "addressBook.h"
-#include <stdio.h>
 
 using namespace node;
 using namespace v8;
