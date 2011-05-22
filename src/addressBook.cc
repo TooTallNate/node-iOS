@@ -4,6 +4,7 @@
 // http://developer.apple.com/library/ios/documentation/AddressBook/Reference/ABGroupRef_iPhoneOS/Reference/reference.html
 
 #import "addressBook.h"
+#include <stdio.h>
 
 using namespace node;
 using namespace v8;
@@ -14,6 +15,7 @@ void AddressBook::Init(v8::Handle<Object> target) {
   HandleScope scope;
   Local<Object> ab = Object::New();
   NODE_SET_METHOD(ab, "getContacts", AddressBook::GetContacts);
+  NODE_SET_METHOD(ab, "getGroups", AddressBook::GetGroups);
   target->Set(String::NewSymbol("AddressBook"), ab);
 }
 
@@ -67,18 +69,30 @@ int GetContacts_DoRequest (eio_req * req) {
     struct person_object* p = (struct person_object*)(&ar->results + (sizeof(struct person_object)*i));
     ABRecordRef pRef = CFArrayGetValueAtIndex(people, i);
 
-    CFStringRef str = (CFStringRef)ABRecordCopyValue(pRef, kABPersonFirstNameProperty);
-//    CFShow(str);
-    if (str != NULL) {
-      buf_len = CFStringGetMaximumSizeForEncoding( CFStringGetLength(str), kCFStringEncodingUTF8 ) + 1;
+    CFStringRef firstNameStr = (CFStringRef)ABRecordCopyValue(pRef, kABPersonFirstNameProperty);
+    if (firstNameStr != NULL) {
+      buf_len = CFStringGetMaximumSizeForEncoding( CFStringGetLength(firstNameStr), kCFStringEncodingUTF8 ) + 1;
       p->firstName = (char*)malloc(buf_len);
-      if (!CFStringGetCString(str, p->firstName, buf_len, kCFStringEncodingUTF8)) {
-        // TODO Throw error
-      }
-      CFRelease(str);
+      CFStringGetCString(firstNameStr, p->firstName, buf_len, kCFStringEncodingUTF8);
+      printf("firstName: %s\n", p->firstName);
+      CFRelease(firstNameStr);
     } else {
       p->firstName = NULL;
     }
+
+    CFStringRef lastNameStr = (CFStringRef)ABRecordCopyValue(pRef, kABPersonLastNameProperty);
+    if (lastNameStr != NULL) {
+      //CFShow(lastNameStr);
+      buf_len = CFStringGetMaximumSizeForEncoding( CFStringGetLength(lastNameStr), kCFStringEncodingUTF8 ) + 1;
+      p->lastName = (char*)malloc(buf_len);
+      CFStringGetCString(lastNameStr, p->lastName, buf_len, kCFStringEncodingUTF8);
+      printf("lastName: %s\n", p->lastName);
+      CFRelease(lastNameStr);
+    } else {
+      p->lastName = NULL;
+    }
+
+
 
   }
   ar->resultsCount = count;
@@ -112,6 +126,9 @@ int GetContacts_AfterResponse (eio_req * req) {
         // a look...
         //free(p->firstName);
       }
+      if (p->lastName != NULL) {
+        curPerson->Set(String::NewSymbol("lastName"), String::NewSymbol( p->lastName ));
+      }
       resultsArray->Set(Integer::New(i), curPerson);
     }
     argv[1] = resultsArray;
@@ -128,4 +145,10 @@ int GetContacts_AfterResponse (eio_req * req) {
   free(ar->results);
   free(ar);
   return 0;
+}
+
+v8::Handle<Value> AddressBook::GetGroups(const Arguments& args) {
+  HandleScope scope;
+
+  return Undefined();
 }
