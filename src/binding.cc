@@ -2,6 +2,7 @@
 #import <node.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <UIKit/UIKit.h>
+#import "addressBook.h"
 #import "graphicServices.h"
 #import "notifications.h"
 #import "telephony.h"
