@@ -8,6 +8,7 @@ int GetContacts_DoRequest (eio_req *);
 int GetContacts_AfterResponse (eio_req *);
 
 struct person_object {
+  ABRecordID recordId;
   const char* firstName;
   const char* lastName;
 };

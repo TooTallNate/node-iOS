@@ -63,10 +63,11 @@ int GetContacts_DoRequest (eio_req * req) {
   CFIndex count = CFArrayGetCount(people);
   struct person_object *results = (struct person_object *) malloc(sizeof(struct person_object) * count);
 
-  int buf_len;
   for (CFIndex i=0; i<count; i++) {
     struct person_object *p = &(results[i]);
     ABRecordRef pRef = CFArrayGetValueAtIndex(people, i);
+
+    p->recordId = ABRecordGetRecordID(pRef);
 
     NSString* firstNameStr = (NSString *)ABRecordCopyValue(pRef, kABPersonFirstNameProperty);
     if (firstNameStr != NULL) {
@@ -113,7 +114,11 @@ int GetContacts_AfterResponse (eio_req * req) {
     for (CFIndex i=0; i < ar->resultsCount; i++) {
       //struct person_object* p = (struct person_object*)(&ar->results + (sizeof(struct person_object)*i));
       struct person_object* p = &ar->results[i];
+      // TODO: These should be turned into a JavaScript "Contact" instance
       Local<Object> curPerson = Object::New();
+      // TODO: This should be a member of the C++ Contact class, invisible to
+      //       JS-land. For now this will do...
+      curPerson->Set(String::NewSymbol("_id"), Integer::New(p->recordId));
       if (p->firstName != NULL) {
         curPerson->Set(String::NewSymbol("firstName"), String::NewSymbol( p->firstName ));
       }
