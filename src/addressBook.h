@@ -1,21 +1,23 @@
 #import <node.h>
 #import <v8.h>
 #import <CoreFoundation/CoreFoundation.h>
+#import <Foundation/Foundation.h>
 #import <AddressBook/AddressBook.h>
 
 int GetContacts_DoRequest (eio_req *);
 int GetContacts_AfterResponse (eio_req *);
 
 struct person_object {
-  char* firstName;
-  char* lastName;
+  const char* firstName;
+  const char* lastName;
 };
 
 struct async_request {
   v8::Persistent<v8::Function> cb;
   bool hasCb;
-  person_object * results;
   CFIndex resultsCount;
+  // 'results' is actually a malloc'd array of person_object's
+  person_object *results;
 };
 
 /*struct class_object {

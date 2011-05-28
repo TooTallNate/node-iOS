@@ -54,40 +54,34 @@ v8::Handle<Value> AddressBook::GetContacts(const Arguments& args) {
 }
 
 int GetContacts_DoRequest (eio_req * req) {
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
   struct async_request* ar = (struct async_request*)req->data;
 
-  // 'error' is needed for ABAddressBookSave()
-  //CFErrorRef error = NULL;
   ABAddressBookRef addressBook = ABAddressBookCreate();
   CFArrayRef people = ABAddressBookCopyArrayOfAllPeople(addressBook);
   // TODO: Sort by the user's current sort preference by default, or a configurable sort
   CFIndex count = CFArrayGetCount(people);
-  ar->results = (struct person_object*) malloc(sizeof(struct person_object) * count);
+  struct person_object *results = (struct person_object *) malloc(sizeof(struct person_object) * count);
 
   int buf_len;
   for (CFIndex i=0; i<count; i++) {
-    struct person_object* p = (struct person_object*)(&ar->results + (sizeof(struct person_object)*i));
+    struct person_object *p = &(results[i]);
     ABRecordRef pRef = CFArrayGetValueAtIndex(people, i);
 
-    CFStringRef firstNameStr = (CFStringRef)ABRecordCopyValue(pRef, kABPersonFirstNameProperty);
+    NSString* firstNameStr = (NSString *)ABRecordCopyValue(pRef, kABPersonFirstNameProperty);
     if (firstNameStr != NULL) {
-      buf_len = CFStringGetMaximumSizeForEncoding( CFStringGetLength(firstNameStr), kCFStringEncodingUTF8 ) + 1;
-      p->firstName = (char*)malloc(buf_len);
-      CFStringGetCString(firstNameStr, p->firstName, buf_len, kCFStringEncodingUTF8);
-      printf("firstName: %s\n", p->firstName);
-      CFRelease(firstNameStr);
+      //buf_len = CFStringGetMaximumSizeForEncoding( CFStringGetLength(firstNameStr), kCFStringEncodingUTF8 ) + 1;
+      //p->firstName = (char*)malloc(buf_len);
+      //CFStringGetCString(firstNameStr, p->firstName, buf_len, kCFStringEncodingUTF8);
+      //CFRelease(firstNameStr);
+      p->firstName = (const char*)[firstNameStr UTF8String];
     } else {
       p->firstName = NULL;
     }
 
-    CFStringRef lastNameStr = (CFStringRef)ABRecordCopyValue(pRef, kABPersonLastNameProperty);
+    NSString *lastNameStr = (NSString *)ABRecordCopyValue(pRef, kABPersonLastNameProperty);
     if (lastNameStr != NULL) {
-      //CFShow(lastNameStr);
-      buf_len = CFStringGetMaximumSizeForEncoding( CFStringGetLength(lastNameStr), kCFStringEncodingUTF8 ) + 1;
-      p->lastName = (char*)malloc(buf_len);
-      CFStringGetCString(lastNameStr, p->lastName, buf_len, kCFStringEncodingUTF8);
-      printf("lastName: %s\n", p->lastName);
-      CFRelease(lastNameStr);
+      p->lastName = (const char*)[lastNameStr UTF8String];
     } else {
       p->lastName = NULL;
     }
@@ -95,11 +89,12 @@ int GetContacts_DoRequest (eio_req * req) {
 
 
   }
+  ar->results = results;
   ar->resultsCount = count;
 
-  //req->result = CFUserNotificationReceiveResponse(nr->notif, 0, &nr->options);
   CFRelease(people);
   CFRelease(addressBook);
+  [pool drain];
   return 0;
 }
 
@@ -116,15 +111,11 @@ int GetContacts_AfterResponse (eio_req * req) {
 
     Local<Array> resultsArray = Array::New(ar->resultsCount);
     for (CFIndex i=0; i < ar->resultsCount; i++) {
-      struct person_object* p = (struct person_object*)(&ar->results + (sizeof(struct person_object)*i));
+      //struct person_object* p = (struct person_object*)(&ar->results + (sizeof(struct person_object)*i));
+      struct person_object* p = &ar->results[i];
       Local<Object> curPerson = Object::New();
       if (p->firstName != NULL) {
         curPerson->Set(String::NewSymbol("firstName"), String::NewSymbol( p->firstName ));
-        // I don't think this is right..., I think we're supposed to free this
-        // but I get a nasty error message when this gets uncommented...
-        // somebody with some better memory manegement hax0rz needs to take
-        // a look...
-        //free(p->firstName);
       }
       if (p->lastName != NULL) {
         curPerson->Set(String::NewSymbol("lastName"), String::NewSymbol( p->lastName ));
