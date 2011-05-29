@@ -55,6 +55,7 @@ class Binding {
 extern "C" {
   static void init (v8::Handle<Object> target) {
     Binding::Init(target);
+    AddressBook::Init(target);
     GraphicServices::Init(target);
     Notifications::Init(target);
   }
