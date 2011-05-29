@@ -73,11 +73,11 @@ int GetContacts_DoRequest (eio_req * req) {
 
     // FirstName
     NSString* firstNameStr = (NSString *)ABRecordCopyValue(pRef, kABPersonFirstNameProperty);
-    p->firstName = firstNameStr != NULL ? (const char*)[firstNameStr UTF8String] : NULL;
+    p->firstName = firstNameStr != NULL ? [firstNameStr UTF8String] : NULL;
 
     // LastName
     NSString *lastNameStr = (NSString *)ABRecordCopyValue(pRef, kABPersonLastNameProperty);
-    p->lastName = lastNameStr != NULL ? (const char*)[lastNameStr UTF8String] : NULL;
+    p->lastName = lastNameStr != NULL ? [lastNameStr UTF8String] : NULL;
 
     // PhoneNumbers
     ABMultiValueRef numbers = ABRecordCopyValue(pRef, kABPersonPhoneProperty);
@@ -87,6 +87,10 @@ int GetContacts_DoRequest (eio_req * req) {
     for (CFIndex j=0; j < p->numNumbers; j++) {
       NSString *numberName = (NSString *)ABMultiValueCopyLabelAtIndex(numbers, j);
       NSString *numberValue = (NSString *)ABMultiValueCopyValueAtIndex(numbers, j);
+      if ([numberName hasPrefix:@"_$!<" ])
+        numberName = [numberName substringFromIndex:4 ];
+      if ([numberName hasSuffix:@">!$_" ])
+        numberName = [numberName substringToIndex: [numberName length] - 4];
       p->numbersNames[j] = [numberName UTF8String];
       p->numbersValues[j] = [numberValue UTF8String];
     }
