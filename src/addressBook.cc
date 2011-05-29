@@ -79,6 +79,18 @@ int GetContacts_DoRequest (eio_req * req) {
     NSString *lastNameStr = (NSString *)ABRecordCopyValue(pRef, kABPersonLastNameProperty);
     p->lastName = lastNameStr != NULL ? (const char*)[lastNameStr UTF8String] : NULL;
 
+    // PhoneNumbers
+    ABMultiValueRef numbers = ABRecordCopyValue(pRef, kABPersonPhoneProperty);
+    p->numNumbers = ABMultiValueGetCount(numbers);
+    p->numbersNames = new const char *[p->numNumbers];
+    p->numbersValues = new const char *[p->numNumbers];
+    for (CFIndex j=0; j < p->numNumbers; j++) {
+      NSString *numberName = (NSString *)ABMultiValueCopyLabelAtIndex(numbers, j);
+      NSString *numberValue = (NSString *)ABMultiValueCopyValueAtIndex(numbers, j);
+      p->numbersNames[j] = [numberName UTF8String];
+      p->numbersValues[j] = [numberValue UTF8String];
+    }
+
     ar->results[i] = p;
   }
 
@@ -102,13 +114,23 @@ int GetContacts_AfterResponse (eio_req * req) {
     Local<Array> resultsArray = Array::New(ar->resultsCount);
     for (CFIndex i=0; i < ar->resultsCount; i++) {
       Contact *p = (Contact *)ar->results[i];
+      // TODO: Instead of Object::New(), replace this with a JavaScript
+      //       "Contact" constructor.
       Local<Object> curPerson = Object::New();
       curPerson->Set(String::NewSymbol("_id"), Integer::New(p->recordId));
       if (p->firstName != NULL)
         curPerson->Set(String::NewSymbol("firstName"), String::NewSymbol( p->firstName ));
       if (p->lastName != NULL)
         curPerson->Set(String::NewSymbol("lastName"), String::NewSymbol( p->lastName ));
+      // PhoneNumbers
+      Local<Object> phoneNumbersObj = Object::New();
+      for (int j=0; j < p->numNumbers; j++) {
+        phoneNumbersObj->Set(String::NewSymbol(p->numbersNames[j]), String::NewSymbol(p->numbersValues[j]));
+      }
+      curPerson->Set(String::NewSymbol("numbers"), phoneNumbersObj);
       resultsArray->Set(Integer::New(i), curPerson);
+      delete [] p->numbersNames;
+      delete [] p->numbersValues;
       delete p;
     }
     argv[1] = resultsArray;
