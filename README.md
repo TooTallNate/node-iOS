@@ -55,20 +55,22 @@ The `options` Object accepts the following parameters:
  * `timeout` - The timeout in seconds of the notification. Defaults to `0` for no timeout.
 
 
-### new AddressBook() -> AddressBook
+### AddressBook
 
-You can create an `AddressBook` instance for when you want information regarding the iDevice's
-central Address Book database. It's also possible to modify the Address Book by adding, editing
-or removing contacts or groups.
+There's one global `AddressBook` instance that you may use to interact with the
+contents of your iDevice's central Address Book database. It's also possible to
+modify the Address Book by adding, editing or removing contacts or groups.
 
 ``` javascript
-var addressBook = new iOS.AddressBook();
+// The singleton AddressBook namespace:
+iOS.AddressBook;
 ```
 
-#### addressBook.getAllContacts(callback)
+#### AddressBook.getContacts([filter,] callback)
 
-Asynchronously retrieves an Array of _all_ "contacts" that are currently in the
-Address Book database.
+Asynchronously retrieves an Array of "Contact" instances from the Address Book
+database that match the given _filter_. If no _filter_ is given, then **ALL**
+contacts that are currently in the Address Book will be retrieved.
 
 
 ### vibrate() -> undefined
