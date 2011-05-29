@@ -72,6 +72,20 @@ Asynchronously retrieves an Array of "Contact" instances from the Address Book
 database that match the given _filter_. If no _filter_ is given, then **ALL**
 contacts that are currently in the Address Book will be retrieved.
 
+``` javascript
+iOS.AddressBook.getContacts(function(err, contacts) {
+  if (err) // Something went wrong
+
+  console.log(contacts);
+  // [ {
+  //  firstName: 'John',
+  //  lastName: 'Doe',
+  //  numbers: { Mobile: '(555) 555-5555' } },
+  //  ...
+  // ]
+});
+```
+
 
 ### vibrate() -> undefined
 
