@@ -61,37 +61,26 @@ int GetContacts_DoRequest (eio_req * req) {
   CFArrayRef people = ABAddressBookCopyArrayOfAllPeople(addressBook);
   // TODO: Sort by the user's current sort preference by default, or a configurable sort
   CFIndex count = CFArrayGetCount(people);
-  struct person_object *results = (struct person_object *) malloc(sizeof(struct person_object) * count);
+  ar->resultsCount = count;
+  ar->results = new Record *[count];
 
   for (CFIndex i=0; i<count; i++) {
-    struct person_object *p = &(results[i]);
+    Contact *p = new Contact;
     ABRecordRef pRef = CFArrayGetValueAtIndex(people, i);
 
+    // RecordID
     p->recordId = ABRecordGetRecordID(pRef);
 
+    // FirstName
     NSString* firstNameStr = (NSString *)ABRecordCopyValue(pRef, kABPersonFirstNameProperty);
-    if (firstNameStr != NULL) {
-      //buf_len = CFStringGetMaximumSizeForEncoding( CFStringGetLength(firstNameStr), kCFStringEncodingUTF8 ) + 1;
-      //p->firstName = (char*)malloc(buf_len);
-      //CFStringGetCString(firstNameStr, p->firstName, buf_len, kCFStringEncodingUTF8);
-      //CFRelease(firstNameStr);
-      p->firstName = (const char*)[firstNameStr UTF8String];
-    } else {
-      p->firstName = NULL;
-    }
+    p->firstName = firstNameStr != NULL ? (const char*)[firstNameStr UTF8String] : NULL;
 
+    // LastName
     NSString *lastNameStr = (NSString *)ABRecordCopyValue(pRef, kABPersonLastNameProperty);
-    if (lastNameStr != NULL) {
-      p->lastName = (const char*)[lastNameStr UTF8String];
-    } else {
-      p->lastName = NULL;
-    }
+    p->lastName = lastNameStr != NULL ? (const char*)[lastNameStr UTF8String] : NULL;
 
-
-
+    ar->results[i] = p;
   }
-  ar->results = results;
-  ar->resultsCount = count;
 
   CFRelease(people);
   CFRelease(addressBook);
@@ -112,20 +101,15 @@ int GetContacts_AfterResponse (eio_req * req) {
 
     Local<Array> resultsArray = Array::New(ar->resultsCount);
     for (CFIndex i=0; i < ar->resultsCount; i++) {
-      //struct person_object* p = (struct person_object*)(&ar->results + (sizeof(struct person_object)*i));
-      struct person_object* p = &ar->results[i];
-      // TODO: These should be turned into a JavaScript "Contact" instance
+      Contact *p = (Contact *)ar->results[i];
       Local<Object> curPerson = Object::New();
-      // TODO: This should be a member of the C++ Contact class, invisible to
-      //       JS-land. For now this will do...
       curPerson->Set(String::NewSymbol("_id"), Integer::New(p->recordId));
-      if (p->firstName != NULL) {
+      if (p->firstName != NULL)
         curPerson->Set(String::NewSymbol("firstName"), String::NewSymbol( p->firstName ));
-      }
-      if (p->lastName != NULL) {
+      if (p->lastName != NULL)
         curPerson->Set(String::NewSymbol("lastName"), String::NewSymbol( p->lastName ));
-      }
       resultsArray->Set(Integer::New(i), curPerson);
+      delete p;
     }
     argv[1] = resultsArray;
 
@@ -138,7 +122,7 @@ int GetContacts_AfterResponse (eio_req * req) {
     ar->cb.Dispose();
   }
 
-  free(ar->results);
+  delete [] ar->results;
   free(ar);
   return 0;
 }

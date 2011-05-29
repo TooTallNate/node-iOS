@@ -3,27 +3,19 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #import <AddressBook/AddressBook.h>
+#import "addressBook-Record.h"
+#import "addressBook-Contact.h"
 
 int GetContacts_DoRequest (eio_req *);
 int GetContacts_AfterResponse (eio_req *);
-
-struct person_object {
-  ABRecordID recordId;
-  const char* firstName;
-  const char* lastName;
-};
 
 struct async_request {
   v8::Persistent<v8::Function> cb;
   bool hasCb;
   CFIndex resultsCount;
-  // 'results' is actually a malloc'd array of person_object's
-  person_object *results;
+  // 'results' is an array of pointers to "Record" instances
+  Record **results;
 };
-
-/*struct class_object {
-
-};*/
 
 class AddressBook {
   public:
