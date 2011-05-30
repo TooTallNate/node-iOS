@@ -2,9 +2,16 @@
 
 class Contact : public Record {
   public:
-    const char* firstName;
-    const char* lastName;
+    // Person
+    const char *firstName;
+    const char *middleName;
+    const char *lastName;
+    // Organization
+    const char *organization;
+    const char *jobTitle;
+    const char *department;
+    // Phone Numbers
     int numNumbers;
-    const char ** numbersNames;
-    const char ** numbersValues;
+    const char **numbersNames;
+    const char **numbersValues;
 }; // class Contact

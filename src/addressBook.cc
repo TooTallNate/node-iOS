@@ -19,11 +19,6 @@ void AddressBook::Init(v8::Handle<Object> target) {
   target->Set(String::NewSymbol("AddressBook"), ab);
 }
 
-// From v8's 'shell.cc'
-// TODO: Move this to some shared header file
-static const char* ToCString(const v8::String::Utf8Value& value) {
-  return *value ? *value : "<string conversion failed>";
-}
 
 // 'createNotification' begins the async notification process. The user should pass
 // an "options" Object and an optional callback function (to examine the results of
@@ -74,10 +69,21 @@ int GetContacts_DoRequest (eio_req * req) {
     // FirstName
     NSString* firstNameStr = (NSString *)ABRecordCopyValue(pRef, kABPersonFirstNameProperty);
     p->firstName = firstNameStr != NULL ? [firstNameStr UTF8String] : NULL;
-
+    // MiddleName
+    NSString* middleNameStr = (NSString *)ABRecordCopyValue(pRef, kABPersonMiddleNameProperty);
+    p->middleName = middleNameStr != NULL ? [middleNameStr UTF8String] : NULL;
     // LastName
     NSString *lastNameStr = (NSString *)ABRecordCopyValue(pRef, kABPersonLastNameProperty);
     p->lastName = lastNameStr != NULL ? [lastNameStr UTF8String] : NULL;
+    // Organization
+    NSString *organizationStr = (NSString *)ABRecordCopyValue(pRef, kABPersonOrganizationProperty);
+    p->organization = organizationStr != NULL ? [organizationStr UTF8String] : NULL;
+    // JobTitle
+    NSString *jobTitleStr = (NSString *)ABRecordCopyValue(pRef, kABPersonJobTitleProperty);
+    p->jobTitle = jobTitleStr != NULL ? [jobTitleStr UTF8String] : NULL;
+    // Department
+    NSString *departmentStr = (NSString *)ABRecordCopyValue(pRef, kABPersonDepartmentProperty);
+    p->department = departmentStr != NULL ? [departmentStr UTF8String] : NULL;
 
     // PhoneNumbers
     ABMultiValueRef numbers = ABRecordCopyValue(pRef, kABPersonPhoneProperty);
@@ -121,11 +127,20 @@ int GetContacts_AfterResponse (eio_req * req) {
       // TODO: Instead of Object::New(), replace this with a JavaScript
       //       "Contact" constructor.
       Local<Object> curPerson = Object::New();
-      curPerson->Set(String::NewSymbol("_id"), Integer::New(p->recordId));
+      //curPerson->Set(String::NewSymbol("_id"), Integer::New(p->recordId));
       if (p->firstName != NULL)
         curPerson->Set(String::NewSymbol("firstName"), String::NewSymbol( p->firstName ));
+      if (p->middleName != NULL)
+        curPerson->Set(String::NewSymbol("middleName"), String::NewSymbol( p->middleName ));
       if (p->lastName != NULL)
         curPerson->Set(String::NewSymbol("lastName"), String::NewSymbol( p->lastName ));
+      if (p->organization!= NULL)
+        curPerson->Set(String::NewSymbol("organization"), String::NewSymbol( p->organization ));
+      if (p->jobTitle != NULL)
+        curPerson->Set(String::NewSymbol("jobTitle"), String::NewSymbol( p->jobTitle ));
+      if (p->department != NULL)
+        curPerson->Set(String::NewSymbol("department"), String::NewSymbol( p->department ));
+
       // PhoneNumbers
       Local<Object> phoneNumbersObj = Object::New();
       for (int j=0; j < p->numNumbers; j++) {
